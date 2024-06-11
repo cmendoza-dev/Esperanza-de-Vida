@@ -1,0 +1,42 @@
+CREATE DATABASE IndiceDesarrolloHumano;
+
+USE IndiceDesarrolloHumano
+
+
+CREATE TABLE Departamentos (
+    ID_DEPARTAMENTO INT PRIMARY KEY,
+    Nombre VARCHAR(50),
+    UBIGEO VARCHAR(6)
+);
+
+
+CREATE TABLE Provincias (
+    ID_PROVINCIA INT PRIMARY KEY,
+    ID_DEPARTAMENTO INT,
+    Nombre VARCHAR(50),
+    UBIGEO VARCHAR(6),
+    FOREIGN KEY (ID_DEPARTAMENTO) REFERENCES Departamentos(ID_DEPARTAMENTO)
+);
+
+
+CREATE TABLE Distritos (
+    ID_DISTRITO INT PRIMARY KEY,
+    ID_PROVINCIA INT,
+    Nombre VARCHAR(50),
+    UBIGEO VARCHAR(6),
+    FOREIGN KEY (ID_PROVINCIA) REFERENCES Provincias(ID_PROVINCIA)
+);
+
+
+CREATE TABLE Indicadores (
+    ID INT PRIMARY KEY,
+    ID_DISTRITO INT,
+    Año INT,
+    Población INT,
+    IDH FLOAT,
+    Esperanza_Vida FLOAT,
+    Educacion_Secundaria FLOAT,
+    Años_Educacion FLOAT,
+    Ingreso_Familiar FLOAT,
+    FOREIGN KEY (ID_DISTRITO) REFERENCES Distritos(ID_DISTRITO)
+);
