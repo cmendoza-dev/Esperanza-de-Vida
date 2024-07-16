@@ -24,7 +24,7 @@ def normalizar_ubigeo(ubigeo):
 conexion_str = (
     "DRIVER={ODBC Driver 18 for SQL Server};"
     "SERVER=DESKTOP-471B0LK;"
-    "DATABASE=IndiceDesarrolloHumano;"
+    "DATABASE=DesarrolloHumano;"
     "UID=sa;"
     "PWD=123;"
     "TrustServerCertificate=yes;"
@@ -78,9 +78,7 @@ try:
             # Añadir la columna del año
             df_ano['Año'] = ano
 
-            # Insertar los datos en la base de datos
-            contador_commit = 0  # Contador para controlar los commits
-
+            # Insertar los datos en las tablas correspondientes
             for index, row in df_ano.iterrows():
                 try:
                     # Verificar si 'DEPARTAMENTO' y 'UBIGEO' no son NaN
@@ -95,19 +93,43 @@ try:
                         id_distrito = resultado[0] if resultado else None
 
                         if id_distrito is not None:
-                            # Insertar el registro en la tabla de indicadores
-                            cursor.execute("""INSERT INTO Indicadores (ID_DISTRITO, Año, Población, IDH, Esperanza_Vida,
-                                                                       Educacion_Secundaria, Años_Educacion, Ingreso_Familiar)
-                                              VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-                                           (id_distrito, row['Año'], row['Población'], row['IDH'], row['Esperanza_Vida'],
-                                            row['Educacion_Secundaria'], row['Años_Educacion'], row['Ingreso_Familiar']))
-                            print(f"Insertado indicador para distrito {row['DISTRITO']} en año {ano}.")
+                            # Insertar el registro en la tabla de población
+                            cursor.execute("""INSERT INTO Poblacion (ID_DISTRITO, Año, Poblacion)
+                                              VALUES (?, ?, ?)""",
+                                           (id_distrito, row['Año'], row['Población']))
+                            conexion.commit()
+                            
+                            # Insertar el registro en la tabla de IDH
+                            cursor.execute("""INSERT INTO IDH (ID_DISTRITO, Año, IDH)
+                                              VALUES (?, ?, ?)""",
+                                           (id_distrito, row['Año'], row['IDH']))
+                            conexion.commit()
 
-                            # Incrementar el contador de commit y realizar commit cada 10 registros
-                            contador_commit += 1
-                            if contador_commit % 1 == 0:
-                                conexion.commit()
-                                print("Commit realizado para registros:", index + 1)
+                            # Insertar el registro en la tabla de esperanza de vida
+                            cursor.execute("""INSERT INTO EsperanzaVida (ID_DISTRITO, Año, Esperanza_Vida)
+                                              VALUES (?, ?, ?)""",
+                                           (id_distrito, row['Año'], row['Esperanza_Vida']))
+                            conexion.commit()
+
+                            # Insertar el registro en la tabla de educación secundaria
+                            cursor.execute("""INSERT INTO EducacionSecundaria (ID_DISTRITO, Año, Educacion_Secundaria)
+                                              VALUES (?, ?, ?)""",
+                                           (id_distrito, row['Año'], row['Educacion_Secundaria']))
+                            conexion.commit()
+
+                            # Insertar el registro en la tabla de años de educación
+                            cursor.execute("""INSERT INTO AñosEducacion (ID_DISTRITO, Año, Años_Educacion)
+                                              VALUES (?, ?, ?)""",
+                                           (id_distrito, row['Año'], row['Años_Educacion']))
+                            conexion.commit()
+
+                            # Insertar el registro en la tabla de ingreso familiar
+                            cursor.execute("""INSERT INTO IngresoFamiliar (ID_DISTRITO, Año, Ingreso_Familiar)
+                                              VALUES (?, ?, ?)""",
+                                           (id_distrito, row['Año'], row['Ingreso_Familiar']))
+                            conexion.commit()
+                            
+                            print(f"Insertado indicador para distrito {row['DISTRITO']} en año {ano}.")
 
                         else:
                             print(f"ID de distrito no encontrado para {row['DISTRITO']} con UBIGEO {ubigeo_normalizado}.")
@@ -116,8 +138,6 @@ try:
                 except Exception as e:
                     print(f"Error al procesar la fila {index}: {e}")
 
-            # Realizar commit final para el año actual
-            conexion.commit()
             print("Commit final realizado para el año:", ano)
 
         except Exception as e:
@@ -125,12 +145,7 @@ try:
             conexion.rollback()
             print(f"Error al procesar el año {ano}: {e}")
 
-    # Verificar el número total de registros en la tabla 'Indicadores'
-    cursor.execute("SELECT COUNT(*) FROM Indicadores")
-    count = cursor.fetchone()[0]
-    print(f"Total de registros en la tabla 'Indicadores': {count}")
-
-    print("Datos insertados exitosamente en la tabla 'Indicadores'.")
+    print("Datos insertados exitosamente en las tablas de indicadores.")
 
 except Exception as e:
     # Deshacer la transacción en caso de error

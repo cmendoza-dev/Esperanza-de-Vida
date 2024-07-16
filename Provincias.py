@@ -7,8 +7,8 @@ archivo = pd.read_excel('./IDH y Componentes - transf.xlsx', sheet_name='Variabl
 archivo = archivo.dropna(axis=0, how='all')
 
 # Usar la primera fila como nombres de columna
-archivo.columns = archivo.iloc[0]
-archivo = archivo.drop(archivo.index[0])
+# archivo.columns = archivo.iloc[0]
+# archivo = archivo.drop(archivo.index[0])
 
 # Asegurarnos de que las columnas UBIGEO, DEPARTAMENTO y Provincia existan
 if 'UBIGEO' in archivo.columns and 'DEPARTAMENTO' in archivo.columns and 'PROVINCIA' in archivo.columns:
@@ -30,8 +30,8 @@ if 'UBIGEO' in archivo.columns and 'DEPARTAMENTO' in archivo.columns and 'PROVIN
     provincias_por_departamento = ubigeo_provincias.drop_duplicates(subset=['DEPARTAMENTO', 'PROVINCIA'], keep='first')
     
     # Guardar el DataFrame en un archivo Excel
-    provincias_por_departamento.to_excel('./provincias_por_departamento.xlsx', index=False)
+    provincias_por_departamento.to_excel('./Provincias.xlsx', index=False)
     
-    print("Se ha guardado exitosamente el DataFrame en 'provincias_por_departamento.xlsx'.")
+    print("Se ha guardado exitosamente el DataFrame en 'Provincias.xlsx'.")
 else:
     print("Las columnas UBIGEO, DEPARTAMENTO y Provincia no se encuentran en el archivo.")

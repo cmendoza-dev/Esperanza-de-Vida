@@ -7,10 +7,6 @@ archivo = pd.read_excel('./IDH y Componentes - transf.xlsx', sheet_name='Variabl
 archivo = archivo.dropna(axis=1, how='all')
 archivo = archivo.dropna(axis=0, how='all')
 
-# Usar la primera fila como nombres de columna
-archivo.columns = archivo.iloc[0]
-archivo = archivo.drop(archivo.index[0])
-
 # Asegurarnos de que las columnas UBIGEO y DEPARTAMENTO existan
 if 'UBIGEO' in archivo.columns and 'DEPARTAMENTO' in archivo.columns:
     # Seleccionar solo las columnas de interés
@@ -31,7 +27,7 @@ if 'UBIGEO' in archivo.columns and 'DEPARTAMENTO' in archivo.columns:
      # Eliminar la fila que contiene "Peru" como departamento
     primeros_registros = primeros_registros[primeros_registros['DEPARTAMENTO'] != 'Perú']
   # Guardar el DataFrame en un archivo Excel
-    primeros_registros.to_excel('./departamentos_unicos.xlsx', index=False)
+    primeros_registros.to_excel('./Departamentos.xlsx', index=False)
     
     print("Se ha guardado exitosamente el DataFrame en 'departamentos_unicos.xlsx'.")
     # Mostrar los resultados
